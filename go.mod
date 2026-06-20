@@ -3,6 +3,7 @@ module github.com/simonwistow/apivalidator
 go 1.25
 
 require (
+	github.com/apache/thrift v0.23.0
 	github.com/jhump/protoreflect v1.18.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/simonwistow/apianalyzer v0.0.0
