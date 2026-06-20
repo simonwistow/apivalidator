@@ -8,10 +8,10 @@
 package all
 
 import (
-	_ "github.com/simonwistow/apivalidator/schemas/openapi" // OpenAPI 3.x + Swagger 2.0
-	// Phase 2: _ "github.com/simonwistow/apivalidator/schemas/jsonschema"
-	// Phase 3: _ "github.com/simonwistow/apivalidator/schemas/graphql"
-	// Phase 4: _ "github.com/simonwistow/apivalidator/schemas/grpc"
-	// Phase 5: _ "github.com/simonwistow/apivalidator/schemas/capnproto"
-	// Phase 5: _ "github.com/simonwistow/apivalidator/schemas/thrift"
+	_ "github.com/simonwistow/apivalidator/schemas/capnproto" // Cap'n Proto
+	_ "github.com/simonwistow/apivalidator/schemas/graphql"   // GraphQL SDL
+	_ "github.com/simonwistow/apivalidator/schemas/grpc"      // gRPC / Protocol Buffers
+	_ "github.com/simonwistow/apivalidator/schemas/jsonschema" // JSON Schema
+	_ "github.com/simonwistow/apivalidator/schemas/openapi"   // OpenAPI 3.x + Swagger 2.0
+	_ "github.com/simonwistow/apivalidator/schemas/thrift"    // Apache Thrift
 )
