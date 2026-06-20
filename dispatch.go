@@ -1,0 +1,148 @@
+package apivalidator
+
+import (
+	"net/http"
+
+	"github.com/simonwistow/apivalidator/internal/route"
+)
+
+// dispatch selects matching schemas and runs validation. When resp is nil,
+// request validation is performed; otherwise response validation runs.
+func (v *Validator) dispatch(req *http.Request, resp *http.Response, schemas []Schema) (*ValidationResult, error) {
+	transport := route.DetectTransport(req)
+
+	// Filter schemas by transport compatibility.
+	candidates := v.candidatesFor(transport, schemas)
+
+	if len(candidates) == 0 {
+		if v.cfg.IgnoreUnknown {
+			return &ValidationResult{Valid: true}, nil
+		}
+		return nil, ErrNoMatchingSchema
+	}
+
+	// Run validation against each candidate.
+	var results []*ValidationResult
+	for _, s := range candidates {
+		var (
+			r   *ValidationResult
+			err error
+		)
+		if resp == nil {
+			r, err = v.validateRequestWith(req, s)
+		} else {
+			r, err = v.validateResponseWith(resp, req, s)
+		}
+		if err == ErrNoMatchingSchema {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+
+	if len(results) == 0 {
+		if v.cfg.IgnoreUnknown {
+			return &ValidationResult{Valid: true}, nil
+		}
+		return nil, ErrNoMatchingSchema
+	}
+
+	return v.mergeResults(results), nil
+}
+
+// dispatchBody runs response-body-only validation (no request context).
+func (v *Validator) dispatchBody(body []byte, contentType string, schemas []Schema) (*ValidationResult, error) {
+	_ = body
+	_ = contentType
+	_ = schemas
+	// Phase 2: implement once JSON Schema body validation exists.
+	return nil, ErrNoMatchingSchema
+}
+
+// candidatesFor filters schemas to those compatible with the detected transport.
+func (v *Validator) candidatesFor(transport route.Transport, schemas []Schema) []Schema {
+	out := make([]Schema, 0, len(schemas))
+	for _, s := range schemas {
+		if schemaMatchesTransport(s.Format(), transport) {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
+// schemaMatchesTransport reports whether a schema format can handle a given transport.
+func schemaMatchesTransport(f Format, t route.Transport) bool {
+	switch t {
+	case route.TransportGRPC, route.TransportGRPCWeb:
+		return f == FormatGRPC
+	case route.TransportGraphQL:
+		return f == FormatGraphQL
+	case route.TransportThrift:
+		return f == FormatThrift
+	case route.TransportREST:
+		return f == FormatOpenAPI3 || f == FormatOpenAPI2 ||
+			f == FormatRAML || f == FormatAPIBlueprint ||
+			f == FormatJSONSchema
+	default:
+		return false
+	}
+}
+
+// mergeResults combines multiple ValidationResults according to the configured
+// MultiSchemaPolicy.
+func (v *Validator) mergeResults(results []*ValidationResult) *ValidationResult {
+	if len(results) == 1 {
+		return results[0]
+	}
+
+	merged := &ValidationResult{MatchedSchema: "multiple"}
+
+	switch v.cfg.MultiSchemaPolicy {
+	case PolicyAny:
+		// Valid if at least one result is valid.
+		for _, r := range results {
+			if r.Valid {
+				merged.Valid = true
+				merged.MatchedEndpoint = r.MatchedEndpoint
+				return merged
+			}
+		}
+		// None passed — collect all violations.
+		merged.Valid = false
+		for _, r := range results {
+			merged.Violations = append(merged.Violations, r.Violations...)
+		}
+
+	default: // PolicyAll
+		// Valid only if every result is valid.
+		merged.Valid = true
+		for _, r := range results {
+			if !r.Valid {
+				merged.Valid = false
+				merged.Violations = append(merged.Violations, r.Violations...)
+			}
+		}
+	}
+
+	return merged
+}
+
+// validateRequestWith dispatches to the format-specific validator for a request.
+func (v *Validator) validateRequestWith(req *http.Request, s Schema) (*ValidationResult, error) {
+	impl, ok := schemaImpl(s)
+	if !ok {
+		return nil, ErrNoMatchingSchema
+	}
+	return impl.ValidateRequest(req, v.cfg)
+}
+
+// validateResponseWith dispatches to the format-specific validator for a response.
+func (v *Validator) validateResponseWith(resp *http.Response, req *http.Request, s Schema) (*ValidationResult, error) {
+	impl, ok := schemaImpl(s)
+	if !ok {
+		return nil, ErrNoMatchingSchema
+	}
+	return impl.ValidateResponse(resp, req, v.cfg)
+}
