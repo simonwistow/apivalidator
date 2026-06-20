@@ -1,0 +1,25 @@
+# Binaries
+/apivalidator
+/cmd/apivalidator/apivalidator
+dist/
+
+# Test artifacts
+*.test
+coverage.out
+coverage.html
+
+# Go
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local planning docs (not for version control)
+plans/
