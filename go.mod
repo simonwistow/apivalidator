@@ -1,6 +1,6 @@
 module github.com/simonwistow/apivalidator
 
-go 1.24.3
+go 1.25
 
 require github.com/simonwistow/apianalyzer v0.0.0
 
