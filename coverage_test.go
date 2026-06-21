@@ -118,7 +118,6 @@ func TestFormat_String(t *testing.T) {
 		{apivalidator.FormatOpenAPI3, "openapi3"},
 		{apivalidator.FormatOpenAPI2, "openapi2"},
 		{apivalidator.FormatRAML, "raml"},
-		{apivalidator.FormatAPIBlueprint, "apiblueprint"},
 		{apivalidator.FormatGRPC, "grpc"},
 		{apivalidator.FormatCapnProto, "capnproto"},
 		{apivalidator.FormatThrift, "thrift"},

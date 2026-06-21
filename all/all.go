@@ -13,5 +13,6 @@ import (
 	_ "github.com/simonwistow/apivalidator/schemas/grpc"      // gRPC / Protocol Buffers
 	_ "github.com/simonwistow/apivalidator/schemas/jsonschema" // JSON Schema
 	_ "github.com/simonwistow/apivalidator/schemas/openapi"   // OpenAPI 3.x + Swagger 2.0
+	_ "github.com/simonwistow/apivalidator/schemas/raml"      // RAML 1.0
 	_ "github.com/simonwistow/apivalidator/schemas/thrift"    // Apache Thrift
 )

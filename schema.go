@@ -5,10 +5,9 @@ type Format int
 
 const (
 	// REST / HTTP
-	FormatOpenAPI3     Format = iota // OpenAPI 3.x (3.0 / 3.1 / 3.2)
-	FormatOpenAPI2                   // Swagger 2.0
-	FormatRAML                       // RAML 1.0
-	FormatAPIBlueprint               // API Blueprint 1A
+	FormatOpenAPI3 Format = iota // OpenAPI 3.x (3.0 / 3.1 / 3.2)
+	FormatOpenAPI2               // Swagger 2.0
+	FormatRAML                   // RAML 1.0
 
 	// RPC / binary
 	FormatGRPC      // .proto file (text format); no codegen required
@@ -28,8 +27,6 @@ func (f Format) String() string {
 		return "openapi2"
 	case FormatRAML:
 		return "raml"
-	case FormatAPIBlueprint:
-		return "apiblueprint"
 	case FormatGRPC:
 		return "grpc"
 	case FormatCapnProto:

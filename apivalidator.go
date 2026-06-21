@@ -1,6 +1,6 @@
 // Package apivalidator validates HTTP requests and responses against API
-// schemas in a variety of formats: OpenAPI 3.x / Swagger 2.0, RAML, API
-// Blueprint, gRPC (.proto), CapnProto, Thrift, JSON Schema, and GraphQL SDL.
+// schemas in a variety of formats: OpenAPI 3.x / Swagger 2.0, RAML 1.0,
+// gRPC (.proto), Cap'n Proto, Thrift, JSON Schema, and GraphQL SDL.
 //
 // Basic usage:
 //

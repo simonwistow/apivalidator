@@ -124,8 +124,7 @@ func schemaMatchesTransport(f Format, t route.Transport) bool {
 	case route.TransportREST, route.TransportUnknown:
 		// Cap'n Proto has no universal Content-Type — match on REST/unknown transport.
 		return f == FormatOpenAPI3 || f == FormatOpenAPI2 ||
-			f == FormatRAML || f == FormatAPIBlueprint ||
-			f == FormatJSONSchema || f == FormatCapnProto
+			f == FormatRAML || f == FormatJSONSchema || f == FormatCapnProto
 	default:
 		return false
 	}
