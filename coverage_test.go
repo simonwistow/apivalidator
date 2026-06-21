@@ -372,6 +372,45 @@ func TestWithStrictMode_Effect(t *testing.T) {
 	}
 }
 
+func TestWithStrictMode_UnknownEndpoint(t *testing.T) {
+	v := apivalidator.NewValidator(apivalidator.WithStrictMode(true))
+	if _, err := v.AddSchemaBytes(apivalidator.FormatOpenAPI3, []byte(minimalOpenAPI)); err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest(http.MethodGet, "/no/such/endpoint", nil)
+	res, err := v.ValidateRequest(req)
+	if err != nil {
+		t.Fatalf("StrictMode should return result not error, got err: %v", err)
+	}
+	if res.Valid {
+		t.Error("expected invalid result for unknown endpoint in strict mode")
+	}
+	found := false
+	for _, viol := range res.Violations {
+		if viol.Code == apivalidator.CodeUnknownEndpoint {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("expected CodeUnknownEndpoint violation in strict mode")
+	}
+}
+
+func TestWithStrictMode_KnownEndpointStillValid(t *testing.T) {
+	v := apivalidator.NewValidator(apivalidator.WithStrictMode(true))
+	if _, err := v.AddSchemaBytes(apivalidator.FormatOpenAPI3, []byte(minimalOpenAPI)); err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest(http.MethodGet, "/users/42", nil)
+	res, err := v.ValidateRequest(req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !res.Valid {
+		t.Errorf("expected valid for known endpoint in strict mode, got: %s", res.Error())
+	}
+}
+
 func TestWithLogger_Effect(t *testing.T) {
 	cfg := &apivalidator.Config{}
 	l := slog.Default()

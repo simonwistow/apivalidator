@@ -24,10 +24,7 @@ func (v *Validator) dispatch(req *http.Request, resp *http.Response, schemas []S
 	candidates := v.candidatesFor(transport, schemas)
 
 	if len(candidates) == 0 {
-		if v.cfg.IgnoreUnknown {
-			return &ValidationResult{Valid: true}, nil
-		}
-		return nil, ErrNoMatchingSchema
+		return v.noSchemaResult()
 	}
 
 	// Run validation against each candidate.
@@ -52,10 +49,7 @@ func (v *Validator) dispatch(req *http.Request, resp *http.Response, schemas []S
 	}
 
 	if len(results) == 0 {
-		if v.cfg.IgnoreUnknown {
-			return &ValidationResult{Valid: true}, nil
-		}
-		return nil, ErrNoMatchingSchema
+		return v.noSchemaResult()
 	}
 
 	return v.mergeResults(results), nil
@@ -192,4 +186,24 @@ func (v *Validator) validateResponseWith(resp *http.Response, req *http.Request,
 		return nil, ErrNoMatchingSchema
 	}
 	return impl.ValidateResponse(resp, req, v.cfg)
+}
+
+// noSchemaResult returns the appropriate outcome when no schema matches.
+// With IgnoreUnknown: silently pass. With StrictMode: return a violation.
+// Default: return ErrNoMatchingSchema.
+func (v *Validator) noSchemaResult() (*ValidationResult, error) {
+	if v.cfg.IgnoreUnknown {
+		return &ValidationResult{Valid: true}, nil
+	}
+	if v.cfg.StrictMode {
+		return &ValidationResult{
+			Valid: false,
+			Violations: []Violation{{
+				Code:     CodeUnknownEndpoint,
+				Severity: SeverityError,
+				Message:  "no registered schema covers this endpoint",
+			}},
+		}, nil
+	}
+	return nil, ErrNoMatchingSchema
 }
