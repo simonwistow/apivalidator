@@ -2,9 +2,18 @@ package apivalidator
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/simonwistow/apivalidator/internal/route"
 )
+
+// bodyValidator is an optional interface implemented by schemas that can
+// validate a raw body without any request context. JSON Schema implements this;
+// format-specific schemas (OpenAPI, gRPC, etc.) do not because they need the
+// request path to select the right operation/message type.
+type bodyValidator interface {
+	ValidateBody(body []byte) *ValidationResult
+}
 
 // dispatch selects matching schemas and runs validation. When resp is nil,
 // request validation is performed; otherwise response validation runs.
@@ -53,12 +62,49 @@ func (v *Validator) dispatch(req *http.Request, resp *http.Response, schemas []S
 }
 
 // dispatchBody runs response-body-only validation (no request context).
+// Only schemas that implement bodyValidator (currently FormatJSONSchema) are
+// applicable here, since other formats require a request path to route to the
+// correct operation or message type.
 func (v *Validator) dispatchBody(body []byte, contentType string, schemas []Schema) (*ValidationResult, error) {
-	_ = body
-	_ = contentType
-	_ = schemas
-	// Phase 2: implement once JSON Schema body validation exists.
-	return nil, ErrNoMatchingSchema
+	// Normalise content-type: strip parameters and lower-case.
+	ct := strings.ToLower(contentType)
+	if idx := strings.Index(ct, ";"); idx != -1 {
+		ct = strings.TrimSpace(ct[:idx])
+	}
+
+	// Only validate JSON bodies (empty content-type is treated permissively).
+	if ct != "" && ct != "application/json" {
+		if v.cfg.IgnoreUnknown {
+			return &ValidationResult{Valid: true}, nil
+		}
+		return nil, ErrNoMatchingSchema
+	}
+
+	// If JSONSchemaScope is request-only, skip response body validation.
+	if v.cfg.JSONSchemaScope == JSONSchemaRequest {
+		if v.cfg.IgnoreUnknown {
+			return &ValidationResult{Valid: true}, nil
+		}
+		return nil, ErrNoMatchingSchema
+	}
+
+	var results []*ValidationResult
+	for _, s := range schemas {
+		bv, ok := s.(bodyValidator)
+		if !ok {
+			continue
+		}
+		results = append(results, bv.ValidateBody(body))
+	}
+
+	if len(results) == 0 {
+		if v.cfg.IgnoreUnknown {
+			return &ValidationResult{Valid: true}, nil
+		}
+		return nil, ErrNoMatchingSchema
+	}
+
+	return v.mergeResults(results), nil
 }
 
 // candidatesFor filters schemas to those compatible with the detected transport.

@@ -196,11 +196,81 @@ func TestAddSchemaFile_BadPath(t *testing.T) {
 	}
 }
 
-func TestValidateResponseBody_Stub(t *testing.T) {
+func TestValidateResponseBody_NoSchema(t *testing.T) {
 	v := apivalidator.NewValidator()
 	_, err := v.ValidateResponseBody([]byte(`{}`), "application/json")
 	if err != apivalidator.ErrNoMatchingSchema {
-		t.Errorf("expected ErrNoMatchingSchema from ValidateResponseBody stub, got %v", err)
+		t.Errorf("expected ErrNoMatchingSchema with no schema registered, got %v", err)
+	}
+}
+
+func TestValidateResponseBody_Valid(t *testing.T) {
+	v := apivalidator.NewValidator()
+	const schema = `{"title":"T","type":"object","required":["id"],"properties":{"id":{"type":"integer"}}}`
+	if _, err := v.AddSchemaBytes(apivalidator.FormatJSONSchema, []byte(schema)); err != nil {
+		t.Fatal(err)
+	}
+	res, err := v.ValidateResponseBody([]byte(`{"id":1}`), "application/json")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !res.Valid {
+		t.Errorf("expected valid body, got: %s", res.Error())
+	}
+}
+
+func TestValidateResponseBody_Invalid(t *testing.T) {
+	v := apivalidator.NewValidator()
+	const schema = `{"title":"T","type":"object","required":["id"],"properties":{"id":{"type":"integer"}}}`
+	if _, err := v.AddSchemaBytes(apivalidator.FormatJSONSchema, []byte(schema)); err != nil {
+		t.Fatal(err)
+	}
+	res, err := v.ValidateResponseBody([]byte(`{"id":"wrong"}`), "application/json")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if res.Valid {
+		t.Error("expected invalid body (wrong type for id)")
+	}
+}
+
+func TestValidateResponseBody_EmptyContentType(t *testing.T) {
+	v := apivalidator.NewValidator()
+	const schema = `{"title":"T","type":"object"}`
+	if _, err := v.AddSchemaBytes(apivalidator.FormatJSONSchema, []byte(schema)); err != nil {
+		t.Fatal(err)
+	}
+	// Empty content-type is treated permissively — JSON Schema still runs.
+	res, err := v.ValidateResponseBody([]byte(`{}`), "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !res.Valid {
+		t.Errorf("expected valid for empty content-type, got: %s", res.Error())
+	}
+}
+
+func TestValidateResponseBody_NonJSONContentType(t *testing.T) {
+	v := apivalidator.NewValidator()
+	const schema = `{"title":"T","type":"object"}`
+	if _, err := v.AddSchemaBytes(apivalidator.FormatJSONSchema, []byte(schema)); err != nil {
+		t.Fatal(err)
+	}
+	_, err := v.ValidateResponseBody([]byte(`{}`), "application/x-thrift")
+	if err != apivalidator.ErrNoMatchingSchema {
+		t.Errorf("expected ErrNoMatchingSchema for non-JSON content-type, got %v", err)
+	}
+}
+
+func TestValidateResponseBody_RequestScopeSkips(t *testing.T) {
+	v := apivalidator.NewValidator(apivalidator.WithJSONSchemaScope(apivalidator.JSONSchemaRequest))
+	const schema = `{"title":"T","type":"object"}`
+	if _, err := v.AddSchemaBytes(apivalidator.FormatJSONSchema, []byte(schema)); err != nil {
+		t.Fatal(err)
+	}
+	_, err := v.ValidateResponseBody([]byte(`{}`), "application/json")
+	if err != apivalidator.ErrNoMatchingSchema {
+		t.Errorf("expected ErrNoMatchingSchema with request-only scope, got %v", err)
 	}
 }
 
