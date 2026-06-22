@@ -24,7 +24,7 @@ func (v *Validator) dispatch(req *http.Request, resp *http.Response, schemas []S
 	candidates := v.candidatesFor(transport, schemas)
 
 	if len(candidates) == 0 {
-		return v.noSchemaResult()
+		return v.noSchemaResult(false)
 	}
 
 	// Run validation against each candidate.
@@ -49,7 +49,8 @@ func (v *Validator) dispatch(req *http.Request, resp *http.Response, schemas []S
 	}
 
 	if len(results) == 0 {
-		return v.noSchemaResult()
+		// Schemas matched the transport but none had a route for this path.
+		return v.noSchemaResult(true)
 	}
 
 	return v.mergeResults(results), nil
@@ -68,18 +69,12 @@ func (v *Validator) dispatchBody(body []byte, contentType string, schemas []Sche
 
 	// Only validate JSON bodies (empty content-type is treated permissively).
 	if ct != "" && ct != "application/json" {
-		if v.cfg.IgnoreUnknown {
-			return &ValidationResult{Valid: true}, nil
-		}
-		return nil, ErrNoMatchingSchema
+		return v.noSchemaResult(false)
 	}
 
 	// If JSONSchemaScope is request-only, skip response body validation.
 	if v.cfg.JSONSchemaScope == JSONSchemaRequest {
-		if v.cfg.IgnoreUnknown {
-			return &ValidationResult{Valid: true}, nil
-		}
-		return nil, ErrNoMatchingSchema
+		return v.noSchemaResult(false)
 	}
 
 	var results []*ValidationResult
@@ -92,10 +87,7 @@ func (v *Validator) dispatchBody(body []byte, contentType string, schemas []Sche
 	}
 
 	if len(results) == 0 {
-		if v.cfg.IgnoreUnknown {
-			return &ValidationResult{Valid: true}, nil
-		}
-		return nil, ErrNoMatchingSchema
+		return v.noSchemaResult(false)
 	}
 
 	return v.mergeResults(results), nil
@@ -188,19 +180,26 @@ func (v *Validator) validateResponseWith(resp *http.Response, req *http.Request,
 }
 
 // noSchemaResult returns the appropriate outcome when no schema matches.
+// schemaFound indicates whether a schema matched the transport but had no route
+// for this path (true), vs. no schema being registered for this transport at
+// all (false). The distinction only affects the StrictMode violation message.
 // With IgnoreUnknown: silently pass. With StrictMode: return a violation.
 // Default: return ErrNoMatchingSchema.
-func (v *Validator) noSchemaResult() (*ValidationResult, error) {
+func (v *Validator) noSchemaResult(schemaFound bool) (*ValidationResult, error) {
 	if v.cfg.IgnoreUnknown {
 		return &ValidationResult{Valid: true}, nil
 	}
 	if v.cfg.StrictMode {
+		msg := "no registered schema covers this endpoint"
+		if schemaFound {
+			msg = "endpoint not found in any registered schema"
+		}
 		return &ValidationResult{
 			Valid: false,
 			Violations: []Violation{{
 				Code:     CodeUnknownEndpoint,
 				Severity: SeverityError,
-				Message:  "no registered schema covers this endpoint",
+				Message:  msg,
 			}},
 		}, nil
 	}
