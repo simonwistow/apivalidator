@@ -11,9 +11,8 @@ import (
 type MiddlewareOption func(*middlewareCfg)
 
 type middlewareCfg struct {
-	onViolation      func(w http.ResponseWriter, r *http.Request, result *ValidationResult)
-	passthroughCodes []int // HTTP status codes written by onViolation — unused; kept for future extension
-	logViolations    bool
+	onViolation   func(w http.ResponseWriter, r *http.Request, result *ValidationResult)
+	logViolations bool
 }
 
 func defaultMiddlewareCfg() *middlewareCfg {

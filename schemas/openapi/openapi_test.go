@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/schemas/openapi"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/openapi"
 )
 
 const petStoreSchema = `{

@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/schemas/graphql"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/graphql"
 )
 
 const bookSchema = `

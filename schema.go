@@ -4,19 +4,24 @@ package apivalidator
 type Format int
 
 const (
-	// REST / HTTP
-	FormatOpenAPI3 Format = iota // OpenAPI 3.x (3.0 / 3.1 / 3.2)
-	FormatOpenAPI2               // Swagger 2.0
-	FormatRAML                   // RAML 1.0
+	// FormatOpenAPI3 selects the OpenAPI 3.x parser (versions 3.0, 3.1, and 3.2).
+	FormatOpenAPI3 Format = iota
+	// FormatOpenAPI2 selects the Swagger 2.0 parser.
+	FormatOpenAPI2
+	// FormatRAML selects the RAML 1.0 parser.
+	FormatRAML
 
-	// RPC / binary
-	FormatGRPC      // .proto file (text format); no codegen required
-	FormatCapnProto // .capnp schema file
-	FormatThrift    // .thrift IDL file
+	// FormatGRPC selects the Protocol Buffers / gRPC parser (.proto text format).
+	FormatGRPC
+	// FormatCapnProto selects the Cap'n Proto parser (.capnp files).
+	FormatCapnProto
+	// FormatThrift selects the Apache Thrift IDL parser (.thrift files).
+	FormatThrift
 
-	// Body-level
-	FormatJSONSchema // JSON Schema (draft-07, 2019-09, 2020-12 — auto-detected from $schema)
-	FormatGraphQL    // GraphQL SDL (.graphql / .gql)
+	// FormatJSONSchema selects the JSON Schema parser (draft-07, 2019-09, 2020-12).
+	FormatJSONSchema
+	// FormatGraphQL selects the GraphQL SDL parser (.graphql and .gql files).
+	FormatGraphQL
 )
 
 func (f Format) String() string {

@@ -12,6 +12,7 @@ import (
 
 	aa "github.com/simonwistow/apianalyzer"
 	"github.com/simonwistow/apianalyzer/parse"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 
@@ -70,7 +71,7 @@ func (s *openapiSchema) ValidateRequest(req *http.Request, cfg *apivalidator.Con
 	return res, nil
 }
 
-func (s *openapiSchema) ValidateResponse(resp *http.Response, req *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
+func (s *openapiSchema) ValidateResponse(resp *http.Response, req *http.Request, _ *apivalidator.Config) (*apivalidator.ValidationResult, error) {
 	match, ok := s.specs.Match(req.Method, req.URL.Path)
 	if !ok {
 		return nil, apivalidator.ErrNoMatchingSchema

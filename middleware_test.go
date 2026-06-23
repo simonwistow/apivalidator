@@ -162,7 +162,7 @@ func TestMiddleware_NextNotCalledOnFailure(t *testing.T) {
 	mw := apivalidator.Middleware(v)
 
 	nextCalled := false
-	next := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	next := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		nextCalled = true
 		w.WriteHeader(http.StatusOK)
 	})

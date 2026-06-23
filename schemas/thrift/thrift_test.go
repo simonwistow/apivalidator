@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/schemas/thrift"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/thrift"
 )
 
 const calculatorThrift = `

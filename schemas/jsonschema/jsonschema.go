@@ -16,6 +16,7 @@ import (
 	"net/http"
 
 	"github.com/santhosh-tekuri/jsonschema/v5"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 
@@ -83,7 +84,7 @@ func (s *jsonSchemaSchema) ValidateRequest(req *http.Request, cfg *apivalidator.
 	return s.validateBody(body), nil
 }
 
-func (s *jsonSchemaSchema) ValidateResponse(resp *http.Response, req *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
+func (s *jsonSchemaSchema) ValidateResponse(resp *http.Response, _ *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
 	if cfg.JSONSchemaScope == apivalidator.JSONSchemaRequest {
 		return &apivalidator.ValidationResult{Valid: true, MatchedSchema: s.name}, nil
 	}

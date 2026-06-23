@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	goraml "github.com/acronis/go-raml/v3"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 

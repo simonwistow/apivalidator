@@ -11,13 +11,14 @@ import (
 // Transport is the detected wire protocol for a request.
 type Transport int
 
+// Transport constants enumerate the detected wire protocol for a request.
 const (
-	TransportREST     Transport = iota // OpenAPI / RAML / API Blueprint
-	TransportGRPC                      // raw gRPC (HTTP/2, Content-Type: application/grpc)
-	TransportGRPCWeb                   // gRPC-Web (HTTP/1.1, Content-Type: application/grpc-web)
-	TransportGraphQL                   // GraphQL (path heuristic or Content-Type)
-	TransportThrift                    // Thrift over HTTP (Content-Type: application/x-thrift)
-	TransportUnknown                   // none of the above
+	TransportREST    Transport = iota // OpenAPI / RAML / API Blueprint
+	TransportGRPC                     // raw gRPC (HTTP/2, Content-Type: application/grpc)
+	TransportGRPCWeb                  // gRPC-Web (HTTP/1.1, Content-Type: application/grpc-web)
+	TransportGraphQL                  // GraphQL (path heuristic or Content-Type)
+	TransportThrift                   // Thrift over HTTP (Content-Type: application/x-thrift)
+	TransportUnknown                  // none of the above
 )
 
 // DetectTransport inspects Content-Type and path to determine wire protocol.

@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// Wrap your application handler with the validation middleware.
-	appHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	appHandler := http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = fmt.Fprintln(w, `{"status":"ok"}`)
 	})

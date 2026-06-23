@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 

@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/schemas/jsonschema"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/jsonschema"
 )
 
 const userSchema = `{

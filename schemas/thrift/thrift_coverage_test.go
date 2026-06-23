@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 
@@ -16,18 +17,6 @@ func writeBinaryThriftMessage(name string) []byte {
 	var buf bytes.Buffer
 	transport := athrift.NewStreamTransportW(&buf)
 	proto := athrift.NewTBinaryProtocol(transport, false, true)
-	ctx := context.Background()
-	_ = proto.WriteMessageBegin(ctx, name, athrift.CALL, 1)
-	_ = proto.WriteMessageEnd(ctx)
-	_ = transport.Flush(ctx)
-	return buf.Bytes()
-}
-
-// writeJSONThriftMessage encodes a Thrift JSON CALL message.
-func writeJSONThriftMessage(name string) []byte {
-	var buf bytes.Buffer
-	transport := athrift.NewStreamTransportW(&buf)
-	proto := athrift.NewTJSONProtocol(transport)
 	ctx := context.Background()
 	_ = proto.WriteMessageBegin(ctx, name, athrift.CALL, 1)
 	_ = proto.WriteMessageEnd(ctx)
@@ -131,7 +120,6 @@ func TestThrift_Binary_InvalidBody(t *testing.T) {
 		t.Error("expected invalid for garbage binary Thrift body")
 	}
 }
-
 
 func TestThrift_ValidateBody_Disabled(t *testing.T) {
 	v := apivalidator.NewValidator(apivalidator.WithValidateBody(false))

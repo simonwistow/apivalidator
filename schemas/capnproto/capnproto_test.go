@@ -7,8 +7,9 @@ import (
 	"testing"
 
 	capnp "capnproto.org/go/capnp/v3"
-	_ "github.com/simonwistow/apivalidator/schemas/capnproto"
+
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/capnproto"
 )
 
 const addressBookSchema = `

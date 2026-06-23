@@ -66,6 +66,8 @@ func (v Violation) String() string {
 // Values are defined as constants below and will not change between releases.
 type ViolationCode string
 
+// ViolationCode constants identify specific violation types. Values are stable
+// across releases and safe to store or compare as strings.
 const (
 	CodeUnknownEndpoint    ViolationCode = "unknown_endpoint"
 	CodeUnknownMethod      ViolationCode = "unknown_method"
@@ -87,6 +89,7 @@ const (
 // Severity indicates how serious a violation is.
 type Severity int
 
+// Severity constants rank how serious a violation is.
 const (
 	SeverityError   Severity = iota // the request/response is definitively wrong
 	SeverityWarning                 // may be wrong, or the schema is ambiguous

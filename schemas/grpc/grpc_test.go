@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/schemas/grpc"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/grpc"
 )
 
 const helloProto = `

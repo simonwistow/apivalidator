@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/all"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/all"
 )
 
 // TestFullPipeline exercises the complete path from schema registration through

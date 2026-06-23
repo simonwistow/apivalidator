@@ -19,6 +19,7 @@ import (
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/desc/protoparse"
 	"github.com/jhump/protoreflect/dynamic"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 

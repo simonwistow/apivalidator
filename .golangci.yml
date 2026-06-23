@@ -12,32 +12,61 @@ linters:
     - misspell
     - bodyclose
     - noctx
-    - goimports
   disable:
     - exhaustive
 
-linters-settings:
-  revive:
-    rules:
-      - name: exported
-        arguments:
-          - "checkPrivateReceivers"
-          - "sayRepetitiveInsteadOfStutters"
-  gocritic:
-    enabled-tags:
-      - diagnostic
-      - performance
-    disabled-checks:
-      - whyNoLint
-  goimports:
-    local-prefixes: github.com/simonwistow/apivalidator
-  gosec:
-    excludes:
-      - G304  # file path from variable — intentional in schema loading methods
+  settings:
+    revive:
+      rules:
+        - name: exported
+          arguments:
+            - "sayRepetitiveInsteadOfStutters"
+        - name: unused-parameter
+          disabled: true  # interface implementations must match the signature
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - performance
+      disabled-checks:
+        - whyNoLint
 
-issues:
-  exclude-rules:
-    - path: "_test\\.go"
-      linters:
-        - gosec
-        - errcheck
+  exclusions:
+    rules:
+      # Tests: in-process response bodies don't need closing; gosec/errcheck/bodyclose/noctx
+      # have too many false positives in test helpers and fuzz targets.
+      - path: '_test\.go'
+        linters:
+          - gosec
+          - errcheck
+          - bodyclose
+          - noctx
+      # Examples use simplified code intentionally (no contexts, simplified errors).
+      - path: '^examples/'
+        linters:
+          - noctx
+          - errcheck
+      # G304: ReadFile/Open with a variable path is intentional in all schema loading.
+      - linters:
+          - gosec
+        text: "G304"
+      # G115: integer overflow in protocol framing (len→byte/uint32) is intentional.
+      - linters:
+          - gosec
+        text: "G115"
+      # SA1019: deprecated API usage (gqlparser, jhump/protoreflect) requires
+      # upstream migration — tracked separately.
+      - linters:
+          - staticcheck
+        text: "SA1019"
+      # QF1003: tagged switch suggestion — stylistic, not a bug.
+      - linters:
+          - staticcheck
+        text: "QF1003"
+
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/simonwistow/apivalidator

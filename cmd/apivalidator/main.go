@@ -18,15 +18,15 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/simonwistow/apivalidator/all"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/all"
 )
 
 func main() {
-	formatFlag   := flag.String("format", "", "schema format: openapi3, openapi2, grpc, graphql, thrift, capnproto, jsonschema")
-	strictFlag   := flag.Bool("strict", false, "treat unknown endpoints as errors")
+	formatFlag := flag.String("format", "", "schema format: openapi3, openapi2, grpc, graphql, thrift, capnproto, jsonschema")
+	strictFlag := flag.Bool("strict", false, "treat unknown endpoints as errors")
 	responseFlag := flag.Bool("response", false, "also validate response bodies")
-	quietFlag    := flag.Bool("q", false, "suppress progress output; only print violations")
+	quietFlag := flag.Bool("q", false, "suppress progress output; only print violations")
 	flag.Parse()
 
 	args := flag.Args()
@@ -74,7 +74,8 @@ func main() {
 			fmt.Fprintf(os.Stderr, "replaying %d entries from %s\n", len(har.Log.Entries), harPath)
 		}
 
-		for i, entry := range har.Log.Entries {
+		for i := range har.Log.Entries {
+			entry := &har.Log.Entries[i]
 			req, err := entry.Request.toHTTPRequest()
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "  entry %d: build request: %v\n", i+1, err)
@@ -104,6 +105,7 @@ func main() {
 			if *responseFlag {
 				resp := entry.Response.toHTTPResponse(req)
 				rResult, rErr := v.ValidateResponse(resp, req)
+				_ = resp.Body.Close()
 				if rErr != nil && rErr != apivalidator.ErrNoMatchingSchema {
 					fmt.Fprintf(os.Stderr, "  [%d] response validation error: %v\n", i+1, rErr)
 				} else if rResult != nil {

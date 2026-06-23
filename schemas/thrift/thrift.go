@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	athrift "github.com/apache/thrift/lib/go/thrift"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 
@@ -82,7 +83,7 @@ func (s *thriftSchema) ValidateRequest(req *http.Request, cfg *apivalidator.Conf
 	return res, nil
 }
 
-func (s *thriftSchema) ValidateResponse(resp *http.Response, req *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
+func (s *thriftSchema) ValidateResponse(_ *http.Response, req *http.Request, _ *apivalidator.Config) (*apivalidator.ValidationResult, error) {
 	_, _, err := parseThriftPath(req.URL.Path)
 	if err != nil {
 		return nil, apivalidator.ErrNoMatchingSchema

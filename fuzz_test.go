@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/all"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/all"
 )
 
 // FuzzValidateRequest ensures the validator never panics on arbitrary request bodies.
@@ -34,7 +34,7 @@ func FuzzValidateRequest(f *testing.F) {
 		f.Fatal(err)
 	}
 
-	f.Fuzz(func(t *testing.T, body []byte) {
+	f.Fuzz(func(_ *testing.T, body []byte) {
 		req := httptest.NewRequest(http.MethodPost, "/anything", bytes.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		// Must not panic; return value and error are unimportant.
@@ -49,9 +49,9 @@ func FuzzParseSchema(f *testing.F) {
 	f.Add([]byte(`not json`))
 	f.Add([]byte{})
 
-	f.Fuzz(func(t *testing.T, data []byte) {
+	f.Fuzz(func(_ *testing.T, data []byte) {
 		// Must not panic regardless of input.
-		apivalidator.ParseSchema(apivalidator.FormatOpenAPI3, data)  //nolint:errcheck
+		apivalidator.ParseSchema(apivalidator.FormatOpenAPI3, data)   //nolint:errcheck
 		apivalidator.ParseSchema(apivalidator.FormatJSONSchema, data) //nolint:errcheck
 	})
 }

@@ -2,6 +2,7 @@ package thrift
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -217,7 +218,9 @@ func (p *idlParser) parseField() (*thriftField, error) {
 	if !p.eof() && p.src[p.pos] == ':' {
 		p.pos++
 		if numStr != "" {
-			fmt.Sscanf(numStr, "%d", &id)
+			if v, err := strconv.Atoi(numStr); err == nil {
+				id = v
+			}
 		}
 	} else {
 		// Not a field ID — rewind.
@@ -229,12 +232,13 @@ func (p *idlParser) parseField() (*thriftField, error) {
 	p.skipWhitespaceAndComments()
 	maybeKw := p.readIdent()
 	typStr := ""
-	if maybeKw == "required" {
+	switch maybeKw {
+	case "required":
 		required = true
 		typStr = p.readIdent()
-	} else if maybeKw == "optional" {
+	case "optional":
 		typStr = p.readIdent()
-	} else {
+	default:
 		typStr = maybeKw
 	}
 
@@ -352,7 +356,7 @@ func (p *idlParser) parseMethod() (*thriftMethod, error) {
 	if !p.eof() {
 		next := p.readIdent()
 		if next == "throws" {
-			p.expect('(') //nolint:errcheck
+			p.expect('(') //nolint:errcheck,gosec
 			depth := 1
 			for !p.eof() && depth > 0 {
 				c := p.src[p.pos]

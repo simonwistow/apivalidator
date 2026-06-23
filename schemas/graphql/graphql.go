@@ -15,6 +15,7 @@ import (
 	"github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 
@@ -131,7 +132,7 @@ func (s *graphqlSchema) ValidateRequest(req *http.Request, cfg *apivalidator.Con
 	return res, nil
 }
 
-func (s *graphqlSchema) ValidateResponse(resp *http.Response, req *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
+func (s *graphqlSchema) ValidateResponse(resp *http.Response, _ *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
 	if !cfg.ValidateBody {
 		return &apivalidator.ValidationResult{Valid: true, MatchedSchema: s.name}, nil
 	}

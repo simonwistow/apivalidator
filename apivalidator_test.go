@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	_ "github.com/simonwistow/apivalidator/schemas/openapi"
 	apivalidator "github.com/simonwistow/apivalidator"
+	_ "github.com/simonwistow/apivalidator/schemas/openapi"
 )
 
 // minimalOpenAPI is a tiny OpenAPI 3.x document with one endpoint.

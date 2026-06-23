@@ -18,6 +18,7 @@ import (
 	"net/http"
 
 	capnp "capnproto.org/go/capnp/v3"
+
 	apivalidator "github.com/simonwistow/apivalidator"
 )
 
@@ -75,7 +76,7 @@ func (s *capnpSchema) ValidateRequest(req *http.Request, cfg *apivalidator.Confi
 	return s.validateBody(body), nil
 }
 
-func (s *capnpSchema) ValidateResponse(resp *http.Response, req *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
+func (s *capnpSchema) ValidateResponse(resp *http.Response, _ *http.Request, cfg *apivalidator.Config) (*apivalidator.ValidationResult, error) {
 	if !cfg.ValidateBody {
 		return &apivalidator.ValidationResult{Valid: true, MatchedSchema: s.name}, nil
 	}
@@ -193,15 +194,18 @@ func (p *capnpParser) skipToNextTopLevel() {
 	for !p.eof() {
 		c := p.src[p.pos]
 		p.pos++
-		if c == '{' {
+		switch c {
+		case '{':
 			depth++
-		} else if c == '}' {
+		case '}':
 			depth--
 			if depth <= 0 {
 				return
 			}
-		} else if c == ';' && depth == 0 {
-			return
+		case ';':
+			if depth == 0 {
+				return
+			}
 		}
 	}
 }

@@ -83,7 +83,7 @@ func (hr *harRequest) toHTTPRequest() (*http.Request, error) {
 		body = strings.NewReader(hr.PostData.Text)
 	}
 
-	req, err := http.NewRequest(hr.Method, u.String(), body)
+	req, err := http.NewRequest(hr.Method, u.String(), body) //nolint:noctx // HAR replay has no ambient context
 	if err != nil {
 		return nil, fmt.Errorf("build request: %w", err)
 	}
