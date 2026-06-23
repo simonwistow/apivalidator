@@ -8,7 +8,7 @@ require (
 	github.com/apache/thrift v0.23.0
 	github.com/jhump/protoreflect v1.18.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
-	github.com/simonwistow/apianalyzer v0.0.0
+	github.com/simonwistow/apianalyzer v0.0.0-20260623154719-0b1b6b2ed7ec
 	github.com/vektah/gqlparser/v2 v2.5.35
 )
 
@@ -36,5 +36,3 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/simonwistow/apianalyzer => ../apianalyzer
