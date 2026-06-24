@@ -53,9 +53,15 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: "1.25.11"
-      - run: go test -coverprofile=coverage.out ./...
-      - uses: codecov/codecov-action@v7
+      - run: go test -coverprofile=coverage.out $(go list -f '{{if or .TestGoFiles .XTestGoFiles}}{{.ImportPath}}{{end}}' ./...)
+      - name: Summary
+        run: |
+          go tool cover -html=coverage.out -o coverage.html
+          printf '## Coverage\n```\n' >> "$GITHUB_STEP_SUMMARY"
+          go tool cover -func=coverage.out >> "$GITHUB_STEP_SUMMARY"
+          printf '```\n' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
         with:
-          files: coverage.out
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          name: coverage-report
+          path: coverage.html
+          retention-days: 30
