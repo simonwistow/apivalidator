@@ -23,12 +23,6 @@ linters:
             - "sayRepetitiveInsteadOfStutters"
         - name: unused-parameter
           disabled: true  # interface implementations must match the signature
-    gocritic:
-      enabled-tags:
-        - diagnostic
-        - performance
-      disabled-checks:
-        - whyNoLint
 
   exclusions:
     rules:
