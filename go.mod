@@ -5,7 +5,7 @@ go 1.25.11
 require (
 	capnproto.org/go/capnp/v3 v3.1.0-alpha.2
 	github.com/acronis/go-raml/v3 v3.0.0
-	github.com/apache/thrift v0.23.0
+	github.com/apache/thrift v0.24.0
 	github.com/jhump/protoreflect v1.18.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/simonwistow/apianalyzer v0.1.1
