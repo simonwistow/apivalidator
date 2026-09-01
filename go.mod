@@ -6,7 +6,7 @@ require (
 	capnproto.org/go/capnp/v3 v3.1.0-alpha.2
 	github.com/acronis/go-raml/v3 v3.0.0
 	github.com/apache/thrift v0.23.0
-	github.com/jhump/protoreflect v1.18.0
+	github.com/jhump/protoreflect v1.18.1
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/simonwistow/apianalyzer v0.1.1
 	github.com/vektah/gqlparser/v2 v2.5.35
@@ -33,6 +33,6 @@ require (
 	golang.org/x/sync v0.21.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
-	google.golang.org/protobuf v1.36.11 // indirect
+	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
